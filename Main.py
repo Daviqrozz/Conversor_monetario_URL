@@ -39,36 +39,63 @@ class ExtratorURL:
             valor = self.get_url_parametros()[indice_valor:indice_e_comercial]
         return valor
 
-    def __len__(self):
-        return len(self.url)
+    def get_cotacao(self,moeda):
+        if moeda == 'DOLAR':
+            valor = 5.5
+            return float(valor)
+        elif moeda == 'EURO':
+            valor = 7
+            return float(valor)
 
-    def __str__(self):
-        return self.url
+#Inputs
 
-    def __eq__(self, other):
-        return self.url == other.url
-
-origem = str(input('Qual moeda sera convertida -> (Dolar/Real):')).upper()
+origem = str(input('Qual moeda sera convertida -> (Dolar/Real/Euro):')).upper()
 quantidade = int(input('Digite a quantia a ser convertida: '))
-destino = str(input('A moeda sera convertida em Dolar ou Real:')).upper()
+destino = str(input('A moeda sera convertida em Dolar,Real ou Euro?:')).upper()
 
+#Variaveis
 url = f"bytebank.com/cambio?quantidade={quantidade}&moedaOrigem={origem}&moedaDestino={destino}"
 extrator_url = ExtratorURL(url)
 valor_quantidade = extrator_url.get_valor_parametro('quantidade')
 moedaorigem = extrator_url.get_valor_parametro('moedaOrigem')
 moedadestino = extrator_url.get_valor_parametro('moedaDestino')
 
-print(extrator_url)
-# Conversão de dólar para real
-cotaçaoDolar = 5.50
+
+# Cotaçoes
+cotaçaoDolar = extrator_url.get_cotacao('DOLAR')
+cotaçaoEuro = extrator_url.get_cotacao('EURO')
+cotaçaoEuroDolar = cotaçaoEuro - cotaçaoDolar
+print(cotaçaoEuroDolar)
+#DOLAR/REAL
 if moedaorigem == 'DOLAR' and moedadestino == 'REAL':
-    valor = int(valor_quantidade) * cotaçaoDolar
-    print(f'{valor_quantidade}$ equivalem a {valor}R$')
+    valor_final = float(valor_quantidade) * cotaçaoDolar
+    print(f'{valor_quantidade}$ equivalem a {valor_final}R$')
 elif moedaorigem == 'REAL' and moedadestino == 'DOLAR':
-    valor = float(valor_quantidade) / cotaçaoDolar
-    print(f'{valor_quantidade}R$ equivalem a {valor:.1f}$')
-else:
-    print(f'Nao é possivel converter de {moedaorigem} para {moedadestino}')
+    valor_final = float(valor_quantidade) / cotaçaoDolar
+    print(f'{valor_quantidade}R$ equivalem a {valor_final:.1f}$')
+
+#EURO/REAL
+elif moedaorigem == 'EURO' and moedadestino == 'REAL':
+    valor_final = float(valor_quantidade) /  cotaçaoEuro
+    print(f'{valor_quantidade}€ equivalem a {valor_final:.1f}R$')
+elif moedaorigem == 'REAL' and moedadestino == 'EURO':
+    valor_final = float(valor_quantidade) * cotaçaoEuro
+    print(f'{valor_quantidade}R$ equivalem a {valor_final:.1f}€')
+
+#DOLAR/EURO
+elif moedaorigem == 'DOLAR' and moedadestino == 'EURO':
+    valor_final = float(valor_quantidade) / cotaçaoEuroDolar
+    print(f'{valor_quantidade}$ equivalem a {valor_final:.1f}€')
+elif moedaorigem == 'EURO' and moedadestino == 'DOlAR':
+    valor_final = float(valor_quantidade) * cotaçaoEuroDolar
+    print(valor_final)
+
+
+
+
+
+
+
 
 
 
