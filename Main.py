@@ -1,4 +1,7 @@
+import requests
+import json
 import re
+
 class ExtratorURL:
     def __init__(self, url):
         self.url = self.sanitiza_url(url)
@@ -40,11 +43,15 @@ class ExtratorURL:
         return valor
 
     def get_cotacao(self,moeda):
+        cotacoes = requests.get('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,BTC-BRL')
+        cotacoes = cotacoes.json()
         if moeda == 'DOLAR':
-            valor = 5.5
+            valorDolar = cotacoes['USDBRL']['bid']
+            valor = valorDolar
             return float(valor)
         elif moeda == 'EURO':
-            valor = 7
+            valorEuro = cotacoes['EURBRL']['bid']
+            valor = valorEuro
             return float(valor)
 
 #Inputs
@@ -64,19 +71,19 @@ moedadestino = extrator_url.get_valor_parametro('moedaDestino')
 # Cotaçoes
 cotaçaoDolar = extrator_url.get_cotacao('DOLAR')
 cotaçaoEuro = extrator_url.get_cotacao('EURO')
-cotaçaoEuroDolar = cotaçaoEuro - cotaçaoDolar
-print(cotaçaoEuroDolar)
+
+
 #DOLAR/REAL
 if moedaorigem == 'DOLAR' and moedadestino == 'REAL':
     valor_final = float(valor_quantidade) * cotaçaoDolar
-    print(f'{valor_quantidade}$ equivalem a {valor_final}R$')
+    print(f'{valor_quantidade}$ equivalem a {valor_final:.1f}R$')
 elif moedaorigem == 'REAL' and moedadestino == 'DOLAR':
     valor_final = float(valor_quantidade) / cotaçaoDolar
     print(f'{valor_quantidade}R$ equivalem a {valor_final:.1f}$')
 
 #EURO/REAL
 elif moedaorigem == 'EURO' and moedadestino == 'REAL':
-    valor_final = float(valor_quantidade) /  cotaçaoEuro
+    valor_final = float(valor_quantidade) / cotaçaoEuro
     print(f'{valor_quantidade}€ equivalem a {valor_final:.1f}R$')
 elif moedaorigem == 'REAL' and moedadestino == 'EURO':
     valor_final = float(valor_quantidade) * cotaçaoEuro
@@ -84,11 +91,13 @@ elif moedaorigem == 'REAL' and moedadestino == 'EURO':
 
 #DOLAR/EURO
 elif moedaorigem == 'DOLAR' and moedadestino == 'EURO':
-    valor_final = float(valor_quantidade) / cotaçaoEuroDolar
-    print(f'{valor_quantidade}$ equivalem a {valor_final:.1f}€')
-elif moedaorigem == 'EURO' and moedadestino == 'DOlAR':
-    valor_final = float(valor_quantidade) * cotaçaoEuroDolar
-    print(valor_final)
+    valor_final = float(valor_quantidade) / cotaçaoDolar - cotaçaoEuro
+    print(f'Conversao entre {moedadestino} e {moedaorigem} ainda nao esta disponivel')
+elif moedaorigem == 'EURO' and moedadestino == 'DOLAR':
+    valor_final = float(valor_quantidade) * cotaçaoEuro - cotaçaoDolar
+    print(f'Conversao entre {moedaorigem} e {moedadestino} ainda nao esta disponivel')
+else:
+    print(f'Nao é possivel fazer a converão entre {moedaorigem} e {moedadestino}')
 
 
 
